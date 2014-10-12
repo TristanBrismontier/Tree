@@ -1,11 +1,10 @@
 Stick stick;
   float p = 0;
-  int side = 800;
   boolean compute = true;
   ArrayList<MapPVector> pVectorMap = new ArrayList<MapPVector>();
 
   public void setup() {
-    size(side, side, P3D);
+    size(800, 800, OPENGL);
     initStick();
   }
 
@@ -32,25 +31,26 @@ Stick stick;
   private void computeStickPosition() {
    if (compute) {
       ArrayList<PVectorWidth> buleListComputed = stick.display();
-      
-      
       for (int i = 0; i < buleListComputed.size(); i++) {
-        ArrayList<PVectorWidth> listbule = null;
+        PVectorWidth current =  (PVectorWidth) buleListComputed.get(i);
+        ArrayList<PVectorWidth> listbule = new ArrayList<PVectorWidth>();
         for (int j = 0; j < pVectorMap.size(); j++) {
-          if(pVectorMap.get(j).id == buleListComputed.get(i).getId()){
+          if(pVectorMap.get(j).id == current.getId()){
             listbule = pVectorMap.get(j).pVectorWidths;
           }
         }
         
-        if (listbule == null) {
+        if (listbule.size() <=0) {
           listbule = new ArrayList<PVectorWidth>();
-          listbule.add(buleListComputed.get(i));
-          pVectorMap.add(new MapPVector(buleListComputed.get(i).getId(), listbule));
+          listbule.add(current);
+          pVectorMap.add(new MapPVector(current.getId(), listbule));
         } else {
-          PVectorWidth lastVector = listbule.get(listbule.size()-1);
-          if (abs(lastVector.dist(buleListComputed.get(i))) >= buleListComputed.get(i)
-              .getWid()) {
-            listbule.add(buleListComputed.get(i));
+          PVectorWidth lastVector = (PVectorWidth)listbule.get(listbule.size()-1);
+          PVector last = new PVector(lastVector.x,lastVector.y,lastVector.z);
+          PVector niou = new PVector(current.x,current.y,current.z);
+          if (abs(last.dist(niou)) >= current.getWid()) {
+             
+            listbule.add((PVectorWidth) current);
           }
         }
       }
@@ -62,16 +62,16 @@ Stick stick;
   }
 
   void drawCylinder(final PVectorWidth current) {
-    float r1 = current.getWid();
-    translate(current.x, current.y, current.z);
+    float r1 = current.getWid()*3;
+    translate(current.x*3, current.y*3, current.z*3);
     box(r1);
   }
 
   private void initStick() {
     compute = true;
     pVectorMap =  new ArrayList<MapPVector>();
-    stick = new Stick( new PVector(0, 0), 50, 180);
-    background(255);
+    stick = new Stick( new PVector(0, 0), 50, 80);
+    background(0);
   }
 
 class EntityT {
@@ -153,21 +153,22 @@ class PVectorWidth extends PVector {
     pStick = true;
     vampireLife = 100;
   }
-
-  public ArrayList<PVectorWidth>  display(){
-     ArrayList<PVectorWidth> buleList = new ArrayList<PVectorWidth>();
+public ArrayList<PVectorWidth>  display(){
+    final ArrayList<PVectorWidth> buleList = new ArrayList<PVectorWidth>();
     if(life > 0){
-       PVectorWidth self = new PVectorWidth(location, width *(life/255), 75-life, life, id);
-      if(width *(life/255) >=1f){
-        buleList.add(self);
+      final PVectorWidth self = new PVectorWidth(location, width *(life/255), 75-life, life, id);
+    if(width *(life/255) >=1f){
+       buleList.add(self);
       }
       computeNewData();
-    }
-     ArrayList<Stick> stickToRemove = new ArrayList<Stick>();
-    for (Stick stick : sticks) {
-      ArrayList<PVectorWidth> childList = stick.display();
+    
+  }
+     
+    final ArrayList<Stick> stickToRemove = new ArrayList<Stick>();
+    for (int i = 0; i < sticks.size(); i++) {
+      ArrayList<PVectorWidth> childList = sticks.get(i).display();
       if(childList.isEmpty()){
-        stickToRemove.add(stick);
+        stickToRemove.add(sticks.get(i));
       }else{
         buleList.addAll(childList);
       }
@@ -193,7 +194,7 @@ class PVectorWidth extends PVector {
     constrain(velocity.x, -0.95f, 0.95f);
     constrain(velocity.z, -0.95f, 0.95f);
     constrain(velocity.y, -9f, -0.05f);
-    if(random(115)> life && percent(1.5f)) addstick();
+    if(random(115)> life && percent(0.2f)) addstick();
   }
 
   private void computeParentStick() {
@@ -202,8 +203,7 @@ class PVectorWidth extends PVector {
     velocity.z +=  random(-2,2) /100;
     constrain(velocity.x, -0.95f, 0.95f);
     constrain(velocity.z, -0.95f, 0.95f);
-    System.out.println(life);
-    if(random(255)> life && percent(3.5f) || life<25 && percent(50f)) addstick();
+    if(random(255)> life && percent(3.5f) || life<25 && percent(3.5f)) addstick();
   }
   
   private boolean percent( float chance){

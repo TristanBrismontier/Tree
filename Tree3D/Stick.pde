@@ -21,21 +21,22 @@
     pStick = true;
     vampireLife = 100;
   }
-
-  public ArrayList<PVectorWidth>  display(){
-     ArrayList<PVectorWidth> buleList = new ArrayList<PVectorWidth>();
+public ArrayList<PVectorWidth>  display(){
+    final ArrayList<PVectorWidth> buleList = new ArrayList<PVectorWidth>();
     if(life > 0){
-       PVectorWidth self = new PVectorWidth(location, width *(life/255), 75-life, life, id);
-      if(width *(life/255) >=1f){
-        buleList.add(self);
+      final PVectorWidth self = new PVectorWidth(location, width *(life/255), 75-life, life, id);
+    if(width *(life/255) >=1f){
+       buleList.add(self);
       }
       computeNewData();
-    }
-     ArrayList<Stick> stickToRemove = new ArrayList<Stick>();
-    for (Stick stick : sticks) {
-      ArrayList<PVectorWidth> childList = stick.display();
+    
+  }
+     
+    final ArrayList<Stick> stickToRemove = new ArrayList<Stick>();
+    for (int i = 0; i < sticks.size(); i++) {
+      ArrayList<PVectorWidth> childList = sticks.get(i).display();
       if(childList.isEmpty()){
-        stickToRemove.add(stick);
+        stickToRemove.add(sticks.get(i));
       }else{
         buleList.addAll(childList);
       }
@@ -61,7 +62,7 @@
     constrain(velocity.x, -0.95f, 0.95f);
     constrain(velocity.z, -0.95f, 0.95f);
     constrain(velocity.y, -9f, -0.05f);
-    if(random(115)> life && percent(1.5f)) addstick();
+    if(random(115)> life && percent(0.2f)) addstick();
   }
 
   private void computeParentStick() {
@@ -70,8 +71,7 @@
     velocity.z +=  random(-2,2) /100;
     constrain(velocity.x, -0.95f, 0.95f);
     constrain(velocity.z, -0.95f, 0.95f);
-    System.out.println(life);
-    if(random(255)> life && percent(3.5f) || life<25 && percent(50f)) addstick();
+    if(random(255)> life && percent(3.5f) || life<25 && percent(3.5f)) addstick();
   }
   
   private boolean percent( float chance){
