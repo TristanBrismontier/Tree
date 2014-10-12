@@ -1,19 +1,103 @@
+Stick stick;
+  float p = 0;
+  int side = 800;
+  boolean compute = true;
+  ArrayList<MapPVector> pVectorMap = new ArrayList<MapPVector>();
+
+  public void setup() {
+    size(side, side, P3D);
+    initStick();
+  }
+
+  public void draw() {
+    computeStickPosition();
+    displaySticks();
+  }
+
+  private void displaySticks() {
+    background(0);
+    noStroke();
+    pointLight(51, 102, 126, 35, 40, 36);
+    translate(width / 2, height, -200);
+    rotateY(radians(p++));
+    for (int i = 0; i < pVectorMap.size(); i++){
+       for (int j = 0; j < pVectorMap.get(i).pVectorWidths.size(); j++) {
+        pushMatrix();
+        drawCylinder(pVectorMap.get(i).pVectorWidths.get(j));
+        popMatrix();
+      }
+    }
+  }
+
+  private void computeStickPosition() {
+   if (compute) {
+      ArrayList<PVectorWidth> buleListComputed = stick.display();
+      
+      
+      for (int i = 0; i < buleListComputed.size(); i++) {
+        ArrayList<PVectorWidth> listbule = null;
+        for (int j = 0; j < pVectorMap.size(); j++) {
+          if(pVectorMap.get(j).id == buleListComputed.get(i).getId()){
+            listbule = pVectorMap.get(j).pVectorWidths;
+          }
+        }
+        
+        if (listbule == null) {
+          listbule = new ArrayList<PVectorWidth>();
+          listbule.add(buleListComputed.get(i));
+          pVectorMap.add(new MapPVector(buleListComputed.get(i).getId(), listbule));
+        } else {
+          PVectorWidth lastVector = listbule.get(listbule.size()-1);
+          if (abs(lastVector.dist(buleListComputed.get(i))) >= buleListComputed.get(i)
+              .getWid()) {
+            listbule.add(buleListComputed.get(i));
+          }
+        }
+      }
+    }
+  }
+
+  public void mousePressed() {
+    initStick();
+  }
+
+  void drawCylinder(final PVectorWidth current) {
+    float r1 = current.getWid();
+    translate(current.x, current.y, current.z);
+    box(r1);
+  }
+
+  private void initStick() {
+    compute = true;
+    pVectorMap =  new ArrayList<MapPVector>();
+    stick = new Stick( new PVector(0, 0), 50, 180);
+    background(255);
+  }
 
 class EntityT {
 
   PVector location;
   float width;
   float height;
-  final float id;
+  float id;
 
-  public EntityT(PVector location, float width, float height,final float id) {
+  public EntityT(PVector location, float width, float height, float id) {
     this.id = id;
     this.location = location.get();
     this.width = width;
     this.height = height;
   }
-
-
+}
+class MapPVector { 
+  float id;
+ ArrayList<PVectorWidth> pVectorWidths;
+ 
+ public MapPVector(float id, ArrayList<PVectorWidth> pVectorWidths){
+   this.id = id;
+   this.pVectorWidths = pVectorWidths;
+ }
+ 
+ 
 }
 class PVectorWidth extends PVector {
   float wid;
@@ -21,7 +105,7 @@ class PVectorWidth extends PVector {
   float alpha;
   float id;
 
-  public PVectorWidth(final PVector vector, final float wid,final float grey,final float alpha, float id) {
+  public PVectorWidth( PVector vector,  float wid, float grey, float alpha, float id) {
     super(vector.x,vector.y,vector.z);
     this.wid = wid;
     this.grey = grey;
@@ -29,8 +113,10 @@ class PVectorWidth extends PVector {
     this.id = id;
   }
   
-
-
+  public float getId() {
+    return id;
+  }
+  
   public float getGrey() {
     return grey;
   }
@@ -69,15 +155,15 @@ class PVectorWidth extends PVector {
   }
 
   public ArrayList<PVectorWidth>  display(){
-    final ArrayList<PVectorWidth> buleList = new ArrayList<PVectorWidth>();
+     ArrayList<PVectorWidth> buleList = new ArrayList<PVectorWidth>();
     if(life > 0){
-      final PVectorWidth self = new PVectorWidth(location, width *(life/255), 75-life, life, id);
+       PVectorWidth self = new PVectorWidth(location, width *(life/255), 75-life, life, id);
       if(width *(life/255) >=1f){
         buleList.add(self);
       }
       computeNewData();
     }
-    final ArrayList<Stick> stickToRemove = new ArrayList<Stick>();
+     ArrayList<Stick> stickToRemove = new ArrayList<Stick>();
     for (Stick stick : sticks) {
       ArrayList<PVectorWidth> childList = stick.display();
       if(childList.isEmpty()){
@@ -120,7 +206,7 @@ class PVectorWidth extends PVector {
     if(random(255)> life && percent(3.5f) || life<25 && percent(50f)) addstick();
   }
   
-  private boolean percent(final float chance){
+  private boolean percent( float chance){
     return  random(100) < chance;
   }
 

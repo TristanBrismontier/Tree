@@ -23,15 +23,15 @@
   }
 
   public ArrayList<PVectorWidth>  display(){
-    final ArrayList<PVectorWidth> buleList = new ArrayList<PVectorWidth>();
+     ArrayList<PVectorWidth> buleList = new ArrayList<PVectorWidth>();
     if(life > 0){
-      final PVectorWidth self = new PVectorWidth(location, width *(life/255), 75-life, life, id);
+       PVectorWidth self = new PVectorWidth(location, width *(life/255), 75-life, life, id);
       if(width *(life/255) >=1f){
         buleList.add(self);
       }
       computeNewData();
     }
-    final ArrayList<Stick> stickToRemove = new ArrayList<Stick>();
+     ArrayList<Stick> stickToRemove = new ArrayList<Stick>();
     for (Stick stick : sticks) {
       ArrayList<PVectorWidth> childList = stick.display();
       if(childList.isEmpty()){
@@ -74,7 +74,7 @@
     if(random(255)> life && percent(3.5f) || life<25 && percent(50f)) addstick();
   }
   
-  private boolean percent(final float chance){
+  private boolean percent( float chance){
     return  random(100) < chance;
   }
 

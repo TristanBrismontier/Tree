@@ -1,6 +1,6 @@
 Stick stick;
   float p = 0;
-  final int side = 800;
+  int side = 800;
   boolean compute = true;
   ArrayList<MapPVector> pVectorMap = new ArrayList<MapPVector>();
 
@@ -30,20 +30,27 @@ Stick stick;
   }
 
   private void computeStickPosition() {
-    if (compute) {
+   if (compute) {
       ArrayList<PVectorWidth> buleListComputed = stick.display();
       
+      
       for (int i = 0; i < buleListComputed.size(); i++) {
-        List<PVectorWidth> listbule = pVectorMap.get(pVectorWidth.getId());
+        ArrayList<PVectorWidth> listbule = null;
+        for (int j = 0; j < pVectorMap.size(); j++) {
+          if(pVectorMap.get(j).id == buleListComputed.get(i).getId()){
+            listbule = pVectorMap.get(j).pVectorWidths;
+          }
+        }
+        
         if (listbule == null) {
           listbule = new ArrayList<PVectorWidth>();
-          listbule.add(buleListComputed.get(i);
-          pVectorMap.put(pVectorWidth.getId(), listbule);
+          listbule.add(buleListComputed.get(i));
+          pVectorMap.add(new MapPVector(buleListComputed.get(i).getId(), listbule));
         } else {
-          PVectorWidth lastVector = Iterables.getLast(listbule);
-          if (abs(lastVector.dist(pVectorWidth)) >= pVectorWidth
+          PVectorWidth lastVector = listbule.get(listbule.size()-1);
+          if (abs(lastVector.dist(buleListComputed.get(i))) >= buleListComputed.get(i)
               .getWid()) {
-            listbule.add(pVectorWidth);
+            listbule.add(buleListComputed.get(i));
           }
         }
       }
@@ -61,10 +68,9 @@ Stick stick;
   }
 
   private void initStick() {
-    ;
     compute = true;
-    pVectorMap = new HashMap<UUID, List<PVectorWidth>>();
-    stick = new Stick(this, new PVector(0, 0), 50, 180);
+    pVectorMap =  new ArrayList<MapPVector>();
+    stick = new Stick( new PVector(0, 0), 50, 180);
     background(255);
   }
 

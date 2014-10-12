@@ -1,5 +1,5 @@
 class MapPVector { 
- final float id;
+  float id;
  ArrayList<PVectorWidth> pVectorWidths;
  
  public MapPVector(float id, ArrayList<PVectorWidth> pVectorWidths){
